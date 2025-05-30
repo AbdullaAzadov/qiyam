@@ -45,9 +45,10 @@ export default function MainPage({ timings }: Props) {
   ];
 
   const namazLabels = ['Фаджр', 'Зухр', 'Аср', 'Магриб', 'Иша'];
-  console.log(time);
 
   const nearestNamazIndex = targets.findIndex((target) => target > time);
+  console.log(nearestNamazIndex, targets, time);
+
   if (nearestNamazIndex === -1) {
     return <div className='p-4'>Загрузка...</div>;
   }
