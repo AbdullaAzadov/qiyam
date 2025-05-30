@@ -6,7 +6,10 @@ import {
 } from '@/src/shared/cn/components/ui/card';
 import { NavigationIcon, Volume1Icon } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { parseISO, format } from 'date-fns';
+import { parseISO } from 'date-fns';
+import { format, toZonedTime } from 'date-fns-tz';
+
+const TIMEZONE = 'Asia/Almaty';
 
 type Props = {
   timings: {
@@ -28,23 +31,28 @@ export default function MainPage({ timings }: Props) {
   const iconCn =
     'absolute top-1/2 left-3/4 -translate-x-1/2 -translate-y-1/2 size-4.5 stroke-1 text-muted-foreground';
   const itemCn = 'flex items-center justify-between relative font-semibold';
+
   const [time, setTime] = useState<number | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTime(new Date().getTime());
+      const now = toZonedTime(new Date(), TIMEZONE).getTime();
+      setTime(now);
     }, 1000);
     return () => clearInterval(interval);
   }, []);
 
   if (time === null) return <div className='p-4'>Загрузка...</div>;
 
+  const getZonedTime = (iso: string) =>
+    toZonedTime(parseISO(iso), TIMEZONE).getTime();
+
   const targets = [
-    parseISO(timings.Fajr).getTime(),
-    parseISO(timings.Dhuhr).getTime(),
-    parseISO(timings.Asr).getTime(),
-    parseISO(timings.Maghrib).getTime(),
-    parseISO(timings.Isha).getTime(),
+    getZonedTime(timings.Fajr),
+    getZonedTime(timings.Dhuhr),
+    getZonedTime(timings.Asr),
+    getZonedTime(timings.Maghrib),
+    getZonedTime(timings.Isha),
   ];
 
   const namazLabels = ['Фаджр', 'Зухр', 'Аср', 'Магриб', 'Иша'];
@@ -54,6 +62,7 @@ export default function MainPage({ timings }: Props) {
     nearestNamazIndex !== -1
       ? targets[nearestNamazIndex]
       : targets[0] + 24 * 60 * 60 * 1000;
+
   const nearestNamazLabel =
     nearestNamazIndex !== -1 ? namazLabels[nearestNamazIndex] : namazLabels[0];
 
@@ -161,6 +170,6 @@ function NamazTime({ label, time, subTime, iconCn, itemCn }: NamazTimeProps) {
 }
 
 const formatTime = (isoString: string): string => {
-  const date = parseISO(isoString);
-  return format(date, 'HH:mm');
+  const date = toZonedTime(parseISO(isoString), TIMEZONE);
+  return format(date, 'HH:mm', { timeZone: TIMEZONE });
 };
