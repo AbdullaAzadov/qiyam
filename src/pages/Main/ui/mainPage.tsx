@@ -45,6 +45,7 @@ export default function MainPage({ timings }: Props) {
   ];
 
   const namazLabels = ['Фаджр', 'Зухр', 'Аср', 'Магриб', 'Иша'];
+  console.log(time);
 
   const nearestNamazIndex = targets.findIndex((target) => target > time);
   if (nearestNamazIndex === -1) {
@@ -52,8 +53,6 @@ export default function MainPage({ timings }: Props) {
   }
   const nearestNamaz = targets[nearestNamazIndex];
   const nearestNamazLabel = namazLabels[nearestNamazIndex];
-  console.log(nearestNamaz, nearestNamazLabel);
-
   const remainingTime = nearestNamaz ? nearestNamaz - time : 0;
   const hours = Math.floor(remainingTime / (1000 * 60 * 60));
   const minutes = Math.floor((remainingTime / (1000 * 60)) % 60);
