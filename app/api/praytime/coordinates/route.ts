@@ -30,11 +30,10 @@ export const GET = async (req: Request) => {
     const today = format(new Date(), 'dd-MM-y');
     const method = 14;
     const tune = encodeURIComponent('0,8,-3,3,3,3,3,0,0');
-    const timezone = encodeURIComponent('Asia/Almaty');
     const calendarMethod = 'UAQ'; // HJCoSA UAQ DIYANET MATHEMATICAL
     const iso8601 = true;
 
-    const URI = `https://api.aladhan.com/v1/timings/${today}?latitude=${latitude}&longitude=${longitude}&method=${method}&shafaq=general&tune=${tune}&school=1&timezonestring=${timezone}&calendarMethod=${calendarMethod}&iso8601=${iso8601}`;
+    const URI = `https://api.aladhan.com/v1/timings/${today}?latitude=${latitude}&longitude=${longitude}&method=${method}&shafaq=general&tune=${tune}&school=1&calendarMethod=${calendarMethod}&iso8601=${iso8601}`;
     console.log(URI);
 
     const response = await fetch(URI);
