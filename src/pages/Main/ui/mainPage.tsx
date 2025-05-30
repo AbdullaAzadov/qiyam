@@ -4,7 +4,6 @@ import {
   CardContent,
   CardHeader,
 } from '@/src/shared/cn/components/ui/card';
-import { format } from 'date-fns';
 import { NavigationIcon, Volume1Icon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -84,10 +83,10 @@ export default function MainPage({ timings }: Props) {
               </p>
               <Volume1Icon className={iconCn} />
               <p className='font-digits'>
-                {format(timings.Fajr, 'HH:mm')}
+                {formatTime(timings.Fajr)}
                 <br />
                 <span className='font-light text-sm text-muted-foreground'>
-                  {format(timings.Sunrise, 'HH:mm')}
+                  {formatTime(timings.Sunrise)}
                 </span>
               </p>
             </div>
@@ -95,26 +94,26 @@ export default function MainPage({ timings }: Props) {
               <p>Зухр</p>
               <Volume1Icon className={iconCn} />
 
-              <p className='font-digits'>{format(timings.Dhuhr, 'HH:mm')}</p>
+              <p className='font-digits'>{formatTime(timings.Dhuhr)}</p>
             </div>
             <div className={itemCn}>
               <p>Аср</p>
               <Volume1Icon className={iconCn} />
-              <p className='font-digits'>{format(timings.Asr, 'HH:mm')}</p>
+              <p className='font-digits'>{formatTime(timings.Asr)}</p>
             </div>
             <div className={itemCn}>
               <p>Магриб</p>
               <Volume1Icon className={iconCn} />
-              <p className='font-digits'>{format(timings.Maghrib, 'HH:mm')}</p>
+              <p className='font-digits'>{formatTime(timings.Maghrib)}</p>
             </div>
             <div className={itemCn}>
               <p>Иша</p>
               <Volume1Icon className={iconCn} />
-              <p className='font-digits'>{format(timings.Isha, 'HH:mm')}</p>
+              <p className='font-digits'>{formatTime(timings.Isha)}</p>
             </div>
           </div>
           <div className='bg-primary text-primary-foreground py-2 font-semibold px-4 flex justify-between items-center'>
-            <p>до {nearestNamazLabel}</p>
+            <p>{nearestNamazLabel} через</p>
             <p className='font-digits'>{remainingTimeStr}</p>
           </div>
         </CardContent>
@@ -122,3 +121,10 @@ export default function MainPage({ timings }: Props) {
     </div>
   );
 }
+
+const formatTime = (isoString: string): string => {
+  const date = new Date(isoString);
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
+};
