@@ -27,7 +27,7 @@ export default function MainPage({ timings }: Props) {
   const iconCn =
     'absolute top-1/2 left-3/4 -translate-x-1/2 -translate-y-1/2 size-4.5 stroke-1 text-muted-foreground';
   const itemCn = 'flex items-center justify-between relative font-semibold';
-  const [time, setTime] = useState(new Date().getTime());
+  const [time, setTime] = useState<number | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -35,6 +35,8 @@ export default function MainPage({ timings }: Props) {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  if (time === null) return <div className='p-4'>Загрузка...</div>;
 
   const targets = [
     new Date(timings.Fajr).getTime(),
@@ -47,11 +49,6 @@ export default function MainPage({ timings }: Props) {
   const namazLabels = ['Фаджр', 'Зухр', 'Аср', 'Магриб', 'Иша'];
 
   const nearestNamazIndex = targets.findIndex((target) => target > time);
-  console.log(nearestNamazIndex, targets, time);
-
-  if (nearestNamazIndex === -1) {
-    return <div className='p-4'>Загрузка...</div>;
-  }
   const nearestNamaz = targets[nearestNamazIndex];
   const nearestNamazLabel = namazLabels[nearestNamazIndex];
   const remainingTime = nearestNamaz ? nearestNamaz - time : 0;
