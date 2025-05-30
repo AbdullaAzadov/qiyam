@@ -12,4 +12,6 @@ const Main = async () => {
   }
 };
 
+export const dynamic = 'force-dynamic';
+
 export default Main;
