@@ -43,6 +43,7 @@ export default function MainPage({ timings }: Props) {
     new Date(timings.Maghrib).getTime(),
     new Date(timings.Isha).getTime(),
   ];
+  console.log(targets);
 
   const namazLabels = ['Фаджр', 'Зухр', 'Аср', 'Магриб', 'Иша'];
 

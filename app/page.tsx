@@ -7,9 +7,11 @@ const Main = async () => {
   );
   const data = await res.json();
 
-  if (data.code === 200) {
+  if (data.code === 200 && data.data.timings) {
     return <MainPage timings={data.data.timings} />;
   }
+
+  return <div className='p-4'>Загрузка...</div>;
 };
 
 export const dynamic = 'force-dynamic';
