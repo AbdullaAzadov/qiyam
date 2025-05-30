@@ -43,13 +43,14 @@ export default function MainPage({ timings }: Props) {
     new Date(timings.Maghrib).getTime(),
     new Date(timings.Isha).getTime(),
   ];
-  console.log(targets);
 
   const namazLabels = ['Фаджр', 'Зухр', 'Аср', 'Магриб', 'Иша'];
 
   const nearestNamazIndex = targets.findIndex((target) => target > time);
   const nearestNamaz = targets[nearestNamazIndex];
   const nearestNamazLabel = namazLabels[nearestNamazIndex];
+  console.log(nearestNamaz, nearestNamazLabel);
+
   const remainingTime = nearestNamaz ? nearestNamaz - time : 0;
   const hours = Math.floor(remainingTime / (1000 * 60 * 60));
   const minutes = Math.floor((remainingTime / (1000 * 60)) % 60);
