@@ -1,20 +1,20 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { namazTimeApi } from '../features/namazTime/api/slice';
+import { namazTimeApi } from '../features/namazTime/api/namazTimeApi';
 import userLocationReducer from '@/src/shared/model/slices/userLocationSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { geocodeApi } from '../shared/api/geocodeApi';
+import { addressApi } from '../shared/api/addressApi';
 
 export const makeStore = () =>
   configureStore({
     reducer: {
       userLocation: userLocationReducer,
       [namazTimeApi.reducerPath]: namazTimeApi.reducer,
-      [geocodeApi.reducerPath]: geocodeApi.reducer,
+      [addressApi.reducerPath]: addressApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()
         .concat(namazTimeApi.middleware)
-        .concat(geocodeApi.middleware),
+        .concat(addressApi.middleware),
   });
 
 export type AppStore = ReturnType<typeof makeStore>;

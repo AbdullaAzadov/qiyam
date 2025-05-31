@@ -11,10 +11,15 @@ import NamazTimeCardItem from './namazTimeCardItem';
 import { getNearestNamazTime } from '../lib/utils';
 import { useCurrentTime } from '@/src/shared/hooks/useCurrentTime';
 import { getUserLocation } from '@/src/shared/lib/utils';
-import { useGetNamazTimingsQuery } from '../api/slice';
-import { useReverseGeocodeQuery } from '@/src/shared/api/geocodeApi';
+import { useGetNamazTimingsQuery } from '../api/namazTimeApi';
+import {
+  IGeoSearchResponse,
+  useReverseGeocodeQuery,
+} from '@/src/shared/api/addressApi';
 import { useEffect } from 'react';
 import { DEFAULT_COORDS } from '@/src/shared/lib/consts';
+import UserGeolocation from '../../userGeolocation/ui/userGeolocation';
+import CustomDialog from '@/src/shared/ui/customDialog';
 
 type Props = {
   initialTimings?: INamazTimings;
@@ -31,7 +36,7 @@ export default function NamazTimeCard({ initialTimings }: Props) {
 
   const {
     data: timingsData,
-    isLoading: isTimingsLoading,
+    isFetching: isTimingsFetching,
     isSuccess,
   } = useGetNamazTimingsQuery(
     { coords: { latitude, longitude } },
@@ -54,11 +59,11 @@ export default function NamazTimeCard({ initialTimings }: Props) {
     if (addressLabel && userCoordsLabel !== addressLabel) {
       setLabel(addressLabel);
     }
-  }, [addressLabel]);
+  }, [setLabel, userCoordsLabel, addressLabel]);
 
   const isLoading =
     isAddressLoading ||
-    isTimingsLoading ||
+    isTimingsFetching ||
     !timings ||
     isAddressLoading ||
     !time;
@@ -91,18 +96,33 @@ export default function NamazTimeCard({ initialTimings }: Props) {
     );
   };
 
+  const handleLocationSelect = (location: IGeoSearchResponse) => {
+    setCoords({ latitude: +location.lat, longitude: +location.lon });
+  };
+
   return (
     <Card className='p-0 overflow-hidden gap-0 relative'>
       <CardHeader className='p-0'>
         <div className='flex justify-between items-center px-4 pt-2'>
-          <p className='text-foreground text-lg'>Время намаза</p>
-          <p
-            className='text-muted-foreground text-sm cursor-pointer'
-            onClick={handleChangeCoords}
+          <p className='text-foreground text-lg select-none'>Время намаза</p>
+          <CustomDialog
+            trigger={
+              <p className='text-muted-foreground text-sm cursor-pointer select-none'>
+                {userCoordsLabel}{' '}
+                <NavigationIcon className='size-3 inline fill-muted text-muted' />
+              </p>
+            }
+            header={{
+              title: 'Ваше местоположение',
+            }}
+            className='overflow-y-auto'
+            mobileMode
           >
-            {userCoordsLabel}{' '}
-            <NavigationIcon className='size-3 inline fill-muted text-muted' />
-          </p>
+            <UserGeolocation
+              onFetchGPS={handleChangeCoords}
+              onSelectLocation={handleLocationSelect}
+            />
+          </CustomDialog>
         </div>
       </CardHeader>
       <hr />

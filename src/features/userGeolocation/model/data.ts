@@ -1,0 +1,100 @@
+import { IGeoSearchResponse } from '@/src/shared/api/addressApi';
+
+export const RecentlyLocations: IGeoSearchResponse[] = [
+  {
+    osm_type: 'relation',
+    lat: '43.2363924',
+    lon: '76.9457275',
+    category: 'boundary',
+    name: 'Алматы',
+    display_name: 'Алматы, Казахстан',
+    address: {
+      city: 'Алматы',
+      country: 'Казахстан',
+      country_code: 'kz',
+    },
+  },
+  {
+    osm_type: 'relation',
+    lat: '42.3004979',
+    lon: '69.7599716',
+    category: 'place',
+    name: 'Сайрам',
+    display_name: 'Сайрам, Каратауский район, Шымкент, Казахстан',
+    address: {
+      suburb: 'Сайрам',
+      city: 'Шымкент',
+      state: 'Шымкент',
+      country: 'Казахстан',
+      country_code: 'kz',
+    },
+  },
+  {
+    osm_type: 'relation',
+    lat: '42.4234022',
+    lon: '69.8252591',
+    category: 'boundary',
+    name: 'Аксукент',
+    display_name:
+      'Аксукент, Сайрамский район, Туркестанская область, Казахстан',
+    address: {
+      state: 'Туркестанская область',
+      country: 'Казахстан',
+      country_code: 'kz',
+    },
+  },
+  {
+    osm_type: 'relation',
+    lat: '42.3146962',
+    lon: '69.5883282',
+    category: 'place',
+    name: 'Шымкент',
+    display_name: 'Шымкент, Казахстан',
+    address: {
+      city: 'Шымкент',
+      state: 'Шымкент',
+      country: 'Казахстан',
+      country_code: 'kz',
+    },
+  },
+  {
+    osm_type: 'relation',
+    lat: '51.1159933',
+    lon: '71.4677059',
+    category: 'boundary',
+    name: 'Астана',
+    display_name: 'Астана, Казахстан',
+    address: {
+      state: 'Астана',
+      country: 'Казахстан',
+      country_code: 'kz',
+    },
+  },
+  {
+    osm_type: 'relation',
+    lat: '42.8719290',
+    lon: '71.3542722',
+    category: 'place',
+    name: 'Тараз',
+    display_name: 'Тараз, Жамбылская область, 080000, Казахстан',
+    address: {
+      city: 'Тараз',
+      state: 'Жамбылская область',
+      country: 'Казахстан',
+      country_code: 'kz',
+    },
+  },
+  {
+    osm_type: 'relation',
+    lat: '41.3123363',
+    lon: '69.2787079',
+    category: 'boundary',
+    name: 'Ташкент',
+    display_name: 'Ташкент, 100000, Узбекистан',
+    address: {
+      city: 'Ташкент',
+      country: 'Узбекистан',
+      country_code: 'uz',
+    },
+  },
+];
