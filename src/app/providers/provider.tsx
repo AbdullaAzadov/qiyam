@@ -1,11 +1,11 @@
 'use client';
 import { useAutoTheme } from '@/src/shared/hooks/useAutoTheme';
-import React from 'react';
+import StoreProvider from './storeProvider';
 
 const AppProvider = ({ children }: { children: React.ReactNode }) => {
   useAutoTheme();
 
-  return <>{children}</>;
+  return <StoreProvider>{children}</StoreProvider>;
 };
 
 export default AppProvider;

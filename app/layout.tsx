@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Geologica, Varela_Round } from 'next/font/google';
-import AppProvider from '@/src/app/providers/appProvider';
+import AppProvider from '@/src/app/providers/provider';
 
 const geologica = Geologica({
   subsets: ['latin', 'cyrillic'],

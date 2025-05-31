@@ -370,6 +370,21 @@
   }
 }
 
+@layer utilities {
+  @keyframes fade458 {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0.25;
+    }
+  }
+
+  .animate-fade458 {
+    animation: fade458 1s linear infinite;
+  }
+}
+
 .font-digits {
   font-family: var(--font-digits);
 }

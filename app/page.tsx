@@ -2,16 +2,7 @@ import MainPage from '@/src/pages/Main/ui/mainPage';
 import React from 'react';
 
 const Main = async () => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/praytime/coordinates?latitude=43.203575478153695&longitude=76.87025617384441`
-  );
-  const data = await res.json();
-
-  if (data.code === 200 && data.data.timings) {
-    return <MainPage timings={data.data.timings} />;
-  }
-
-  return <div className='p-4'>Загрузка...</div>;
+  return <MainPage />;
 };
 
 export const dynamic = 'force-dynamic';
