@@ -19,7 +19,7 @@ const UserGeolocationItem = ({ location, onSelectLocation }: Props) => {
     <DialogClose asChild onClick={() => onSelectLocation(location)}>
       <Button
         variant={'outline'}
-        className='w-full h-fit bg-accent/40 flex flex-col items-start'
+        className='w-full h-fit bg-background dark:bg-accent/40 flex not-dark:shadow-md flex-col items-start'
         autoFocus={false}
         tabIndex={-1}
       >

@@ -15,9 +15,11 @@ import {
   IGeoSearchResponse,
   useReverseGeocodeQuery,
 } from '@/src/shared/api/addressApi';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { DEFAULT_COORDS } from '@/src/shared/lib/consts';
 import UserGeolocation from '../../userGeolocation/ui/userGeolocation';
+import { ICoords } from '@/src/shared/lib/types';
+import { cn } from '@/src/shared/cn/lib/utils';
 
 type Props = {
   initialTimings?: INamazTimings;
@@ -31,6 +33,7 @@ export default function NamazTimeCard({ initialTimings }: Props) {
     setCoords,
     setLabel,
   } = useUserLocation();
+  const [gpsCoords, setGpsCoords] = useState<ICoords>({ latitude, longitude });
 
   const {
     data: timingsData,
@@ -42,12 +45,9 @@ export default function NamazTimeCard({ initialTimings }: Props) {
   );
 
   const { data: addressLabel, isLoading: isAddressLoading } =
-    useReverseGeocodeQuery(
-      { latitude, longitude },
-      {
-        skip: initialTimings !== undefined,
-      }
-    );
+    useReverseGeocodeQuery(gpsCoords, {
+      skip: true,
+    });
 
   const timings = isSuccess
     ? timingsData.data.timings
@@ -59,12 +59,12 @@ export default function NamazTimeCard({ initialTimings }: Props) {
     }
   }, [setLabel, userCoordsLabel, addressLabel]);
 
-  const isLoading =
-    isAddressLoading ||
-    isTimingsFetching ||
-    !timings ||
-    isAddressLoading ||
-    !time;
+  // const isLoading =
+  //   isAddressLoading ||
+  //   isTimingsFetching ||
+  //   !timings ||
+  //   isAddressLoading ||
+  //   !time;
 
   const { nearestNamazLabel, remainingTimeToNearestNamaz } =
     getNearestNamazTime(timings, time);
@@ -86,6 +86,7 @@ export default function NamazTimeCard({ initialTimings }: Props) {
     getUserLocation(
       (coords) => {
         setCoords(coords);
+        setGpsCoords(coords);
       },
       (error) => {
         console.error('Ошибка получения геолокации:', error);
@@ -96,6 +97,7 @@ export default function NamazTimeCard({ initialTimings }: Props) {
 
   const handleLocationSelect = (location: IGeoSearchResponse) => {
     setCoords({ latitude: +location.lat, longitude: +location.lon });
+    setLabel(location.name);
   };
 
   return (
@@ -114,10 +116,19 @@ export default function NamazTimeCard({ initialTimings }: Props) {
       <CardContent className='p-0'>
         <div className='flex flex-col gap-4 p-3 px-4'>
           {namazTimes.map((namaz, i) => (
-            <NamazTimeCardItem key={i} {...namaz} isLoading={!!isLoading} />
+            <NamazTimeCardItem
+              key={i}
+              {...namaz}
+              isLoading={isTimingsFetching}
+            />
           ))}
         </div>
-        <div className='bg-primary text-primary-foreground py-2 font-semibold px-4 flex justify-between items-center'>
+        <div
+          className={cn(
+            'bg-primary text-primary-foreground py-2 font-semibold transition-all px-4 flex justify-between items-center',
+            isTimingsFetching && 'animate-pulse text-transparent'
+          )}
+        >
           <p>{nearestNamazLabel} через</p>
           <p className='font-digits'>{remainingTimeToNearestNamaz}</p>
         </div>
