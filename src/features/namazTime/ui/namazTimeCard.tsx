@@ -4,7 +4,6 @@ import {
   CardContent,
   CardHeader,
 } from '@/src/shared/cn/components/ui/card';
-import { NavigationIcon } from 'lucide-react';
 import { INamazTimings } from '../api/types';
 import { useUserLocation } from '@/src/shared/hooks/useUserLocation';
 import NamazTimeCardItem from './namazTimeCardItem';
@@ -19,7 +18,6 @@ import {
 import { useEffect } from 'react';
 import { DEFAULT_COORDS } from '@/src/shared/lib/consts';
 import UserGeolocation from '../../userGeolocation/ui/userGeolocation';
-import CustomDialog from '@/src/shared/ui/customDialog';
 
 type Props = {
   initialTimings?: INamazTimings;
@@ -105,24 +103,11 @@ export default function NamazTimeCard({ initialTimings }: Props) {
       <CardHeader className='p-0'>
         <div className='flex justify-between items-center px-4 pt-2'>
           <p className='text-foreground text-lg select-none'>Время намаза</p>
-          <CustomDialog
-            trigger={
-              <p className='text-muted-foreground text-sm cursor-pointer select-none'>
-                {userCoordsLabel}{' '}
-                <NavigationIcon className='size-3 inline fill-muted text-muted' />
-              </p>
-            }
-            header={{
-              title: 'Ваше местоположение',
-            }}
-            className='overflow-y-auto'
-            mobileMode
-          >
-            <UserGeolocation
-              onFetchGPS={handleChangeCoords}
-              onSelectLocation={handleLocationSelect}
-            />
-          </CustomDialog>
+          <UserGeolocation
+            triggerLabel={userCoordsLabel}
+            onFetchGPS={handleChangeCoords}
+            onSelectLocation={handleLocationSelect}
+          />
         </div>
       </CardHeader>
       <hr />

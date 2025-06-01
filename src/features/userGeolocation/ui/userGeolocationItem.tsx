@@ -20,6 +20,8 @@ const UserGeolocationItem = ({ location, onSelectLocation }: Props) => {
       <Button
         variant={'outline'}
         className='w-full h-fit bg-accent/40 flex flex-col items-start'
+        autoFocus={false}
+        tabIndex={-1}
       >
         <p className='font-semibold text-lg'>{location.name}</p>
         <span className='text-muted-foreground font-light'>

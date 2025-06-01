@@ -3,26 +3,29 @@ import {
   IGeoSearchResponse,
   useSearchCityByNameQuery,
 } from '@/src/shared/api/addressApi';
-import { Button } from '@/src/shared/cn/components/ui/button';
-import { Input } from '@/src/shared/cn/components/ui/input';
-import { cn } from '@/src/shared/cn/lib/utils';
-import { debounce } from 'lodash';
-import { MapPinIcon, MapPinXIcon } from 'lucide-react';
+import CustomDialog from '@/src/shared/ui/customDialog';
+import { MapPinIcon, NavigationIcon } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
-import UserGeolocationItem, {
-  UserGeolocationItemSkeleton,
-} from './userGeolocationItem';
-import { DialogClose } from '@/src/shared/cn/components/ui/dialog';
+import UserGeolocationList from './userGeolocationList';
+import { debounce } from 'lodash';
 import { RecentlyLocations } from '../model/data';
+import { Input } from '@/src/shared/cn/components/ui/input';
+import { DialogClose } from '@/src/shared/cn/components/ui/dialog';
+import { Button } from '@/src/shared/cn/components/ui/button';
 
-type Props = {
-  onSelectLocation: (location: IGeoSearchResponse) => void;
+type Proos = {
+  triggerLabel: string;
   onFetchGPS: () => void;
+  onSelectLocation: (location: IGeoSearchResponse) => void;
 };
 
 const ITEMS_LIMIT = 8;
 
-const UserGeolocation = ({ onSelectLocation, onFetchGPS }: Props) => {
+const UserGeolocation = ({
+  triggerLabel,
+  onFetchGPS,
+  onSelectLocation,
+}: Proos) => {
   const [inputValue, setInputValue] = useState('');
   const [query, setQuery] = useState('');
   const { data, isFetching, refetch, isSuccess } = useSearchCityByNameQuery(
@@ -55,71 +58,46 @@ const UserGeolocation = ({ onSelectLocation, onFetchGPS }: Props) => {
   if (isSuccess && query.length >= 2) renderData = data;
 
   return (
-    <div className='flex flex-col gap-6 h-full'>
-      <div className='flex items-center gap-2 h-9'>
-        <Input
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          placeholder='Введите местоположение...'
-          className='h-full'
-        />
-        <DialogClose onClick={onFetchGPS} asChild>
-          <Button size={'icon'}>
-            <MapPinIcon className='size-5 stroke-2 stroke-primary-foreground' />
-          </Button>
-        </DialogClose>
-      </div>
-      <hr />
-      <div className={cn('overflow-y-auto space-y-4 flex-1')}>
-        {renderingRecentlyLocations && !isFetching && (
-          <p>Популярные местоположения</p>
-        )}
-        {isFetching ? (
-          <LocationListLoading count={4} />
-        ) : (
-          <LocationsList
-            data={renderData}
-            onSelectLocation={onSelectLocation}
-          />
-        )}
-        {renderData.length === 0 && !isFetching && (
-          <div className='flex items-center gap-3 justify-center h-full font-light text-muted-foreground'>
-            <MapPinXIcon className='size-8 stroke-2' />
-            <span>
-              Ничего не найдено <br /> по запросу &quot;{query}&quot;
-            </span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-type listProps = {
-  data: IGeoSearchResponse[];
-  onSelectLocation: (location: IGeoSearchResponse) => void;
-};
-
-const LocationsList = ({ data, onSelectLocation }: listProps) => {
-  return data.map((location, index) => {
-    if (index >= ITEMS_LIMIT) return null;
-    return (
-      <UserGeolocationItem
-        key={index}
-        location={location}
+    <CustomDialog
+      trigger={
+        <p className='text-muted-foreground text-sm cursor-pointer select-none'>
+          {triggerLabel}{' '}
+          <NavigationIcon className='size-3 inline fill-muted text-muted' />
+        </p>
+      }
+      header={{
+        title: 'Ваше местоположение',
+        children: (
+          <>
+            <div className='flex items-center gap-2 h-9'>
+              <Input
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder='Введите местоположение...'
+                className='h-full'
+                autoFocus={false}
+                tabIndex={-1}
+              />
+              <DialogClose onClick={onFetchGPS} asChild>
+                <Button size={'icon'} autoFocus={false} tabIndex={-1}>
+                  <MapPinIcon className='size-5 stroke-2 stroke-primary-foreground' />
+                </Button>
+              </DialogClose>
+            </div>
+            <hr className='mt-1' />
+          </>
+        ),
+      }}
+      mobileMode
+    >
+      <UserGeolocationList
+        renderData={renderData}
+        renderingRecentlyLocations={renderingRecentlyLocations}
+        isFetching={isFetching}
+        query={query}
         onSelectLocation={onSelectLocation}
       />
-    );
-  });
-};
-
-const LocationListLoading = ({ count }: { count: number }) => {
-  return (
-    <>
-      {[...Array(count)].map((_, index) => {
-        return <UserGeolocationItemSkeleton key={index} />;
-      })}
-    </>
+    </CustomDialog>
   );
 };
 

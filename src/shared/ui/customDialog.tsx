@@ -18,6 +18,7 @@ type Props = {
     className?: string;
     titleClassName?: string;
     descriptionClassName?: string;
+    children?: React.ReactNode;
   };
   children?: React.ReactNode;
   open?: boolean;
@@ -45,9 +46,14 @@ const CustomDialog = (props: Props) => {
             >
               {props.header.description}
             </DialogDescription>
+            {props.header.children}
           </DialogHeader>
         )}
-        <div className={cn(props.mobileMode && 'w-full h-full flex-1')}>
+        <div
+          className={cn(
+            props.mobileMode && 'w-full flex-1 max-h-[82.5dvh] overflow-y-auto'
+          )}
+        >
           {props.children}
         </div>
       </DialogContent>
