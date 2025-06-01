@@ -44,10 +44,9 @@ export default function NamazTimeCard({ initialTimings }: Props) {
     { skip: initialTimings !== undefined }
   );
 
-  const { data: addressLabel, isLoading: isAddressLoading } =
-    useReverseGeocodeQuery(gpsCoords, {
-      skip: true,
-    });
+  const { data: addressLabel } = useReverseGeocodeQuery(gpsCoords, {
+    skip: true,
+  });
 
   const timings = isSuccess
     ? timingsData.data.timings
