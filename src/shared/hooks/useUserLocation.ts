@@ -9,6 +9,7 @@ import {
 import { useAppSelector } from '@/src/app/store';
 import { LS_KEY_COORDS, LS_KEY_COORDS_LABEL } from '../lib/consts';
 import { ICoords } from '../lib/types';
+import { isNumber } from 'lodash';
 
 export function useUserLocation() {
   const dispatch = useDispatch();
@@ -23,8 +24,8 @@ export function useUserLocation() {
 
     if (coordsRaw) {
       try {
-        const parsed = JSON.parse(coordsRaw);
-        if (parsed.lat && parsed.lon) {
+        const parsed = JSON.parse(coordsRaw) as ICoords;
+        if (isNumber(parsed.latitude) && isNumber(parsed.longitude)) {
           dispatch(setUserCoords(parsed));
         }
       } catch (err) {
