@@ -4,17 +4,6 @@ import { ICoords } from '@/src/shared/lib/types';
 import { useEffect, useState } from 'react';
 import { getQiblaDirection } from './lib/utils';
 
-const directions = [
-  { label: 'N', angle: 0 },
-  { label: 'NE', angle: 45 },
-  { label: 'E', angle: 90 },
-  { label: 'SE', angle: 135 },
-  { label: 'S', angle: 180 },
-  { label: 'SW', angle: 225 },
-  { label: 'W', angle: 270 },
-  { label: 'NW', angle: 315 },
-];
-
 const QiblaDetector = () => {
   const [coords, setCoords] = useState<ICoords | null>(null);
   const [deviceHeading, setDeviceHeading] = useState<number>(0);
@@ -23,12 +12,12 @@ const QiblaDetector = () => {
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'ArrowRight') {
-        setDeviceHeading((prev) => prev + 2);
+        setDeviceHeading((prev) => (prev + 2) % 360);
         return;
       }
 
       if (e.key === 'ArrowLeft') {
-        setDeviceHeading((prev) => prev - 2);
+        setDeviceHeading((prev) => (prev - 2 + 360) % 360);
         return;
       }
     }
@@ -52,12 +41,11 @@ const QiblaDetector = () => {
 
   useEffect(() => {
     const handleOrientation = (e: DeviceOrientationEvent) => {
-      if (typeof e.alpha === 'number') setDeviceHeading(e.alpha);
+      if (e.alpha !== null) setDeviceHeading(e.alpha);
     };
 
     if (typeof window !== 'undefined' && 'DeviceOrientationEvent' in window) {
       const D = DeviceOrientationEvent as any;
-
       if (typeof D.requestPermission === 'function') {
         if (permissionGranted) {
           window.addEventListener('deviceorientation', handleOrientation, true);
@@ -65,7 +53,6 @@ const QiblaDetector = () => {
       } else {
         window.addEventListener('deviceorientation', handleOrientation, true);
       }
-
       return () =>
         window.removeEventListener('deviceorientation', handleOrientation);
     }
@@ -86,21 +73,14 @@ const QiblaDetector = () => {
   const qiblaAzimuth = coords
     ? getQiblaDirection(coords.latitude, coords.longitude)
     : 0;
-
-  // Вычисляем относительное направление от текущего heading до Каабы
-  const relativeDirection = (qiblaAzimuth - deviceHeading + 360) % 360;
-
-  // Радиус круга (для вычисления позиции делений)
-  const radius = 80; // половина 160px - подгон под размер круга
+  const circleRotation = -deviceHeading; // Вращаем фон в противоположную сторону
 
   return (
     <div className='flex flex-col items-center justify-center min-h-[50vh] px-4'>
       <h2 className='text-xl font-bold mb-4'>Направление к Кибле</h2>
 
-      {typeof window !== 'undefined' &&
-      'DeviceOrientationEvent' in window &&
-      (DeviceOrientationEvent as any).requestPermission &&
-      !permissionGranted ? (
+      {!permissionGranted &&
+      (DeviceOrientationEvent as any).requestPermission ? (
         <button
           onClick={requestPermission}
           className='px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700 transition'
@@ -108,61 +88,63 @@ const QiblaDetector = () => {
           Включить компас
         </button>
       ) : (
-        <div
-          className='relative w-44 h-44 rounded-full border-4 border-gray-300 dark:border-gray-600 flex items-center justify-center mt-2'
-          style={{
-            transform: `rotate(${-deviceHeading}deg)`, // Вращаем весь диск по компасу
-            transition: 'transform 0.2s ease-out',
-          }}
-        >
-          {/* Иконка Каабы */}
+        <div className='relative w-64 h-64'>
+          {/* Вращающийся фон с Каабой и направлениями */}
           <div
-            className='absolute text-3xl select-none'
+            className='absolute w-full h-full rounded-full border-4 border-gray-300'
             style={{
-              transform: `rotate(${qiblaAzimuth}deg) translateY(-60px)`, // Позиционируем Каабу по азимуту
+              transform: `rotate(${circleRotation}deg)`,
+              transition: 'transform 0.2s ease-out',
             }}
           >
-            🕋
-          </div>
+            {/* Иконка Каабы (вращается вместе с фоном) */}
+            <div
+              className='absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl'
+              style={{
+                transform: `rotate(${qiblaAzimuth}deg)`,
+                transformOrigin: '50% calc(100% + 32px)',
+              }}
+            >
+              🕋
+            </div>
 
-          {/* Центральная стрелка (указывает направление устройства) */}
-          <div className='absolute w-1 h-20 bg-red-600 origin-bottom'></div>
-
-          {/* Деления сторон света */}
-          {directions.map(({ label, angle }) => {
-            // Вычисляем позицию метки по окружности
-            const rad = (angle * Math.PI) / 180;
-            const x = radius * Math.sin(rad);
-            const y = -radius * Math.cos(rad);
-            return (
-              <span
-                key={label}
-                className='absolute text-xs font-semibold select-none'
+            {/* Серые направления (крестом) */}
+            {['N', 'E', 'S', 'W'].map((dir, i) => (
+              <div
+                key={dir}
+                className='absolute text-gray-500 font-bold'
                 style={{
-                  left: `calc(50% + ${x}px)`,
-                  top: `calc(50% + ${y}px)`,
-                  userSelect: 'none',
-                  transform: 'translate(-50%, -50%)',
+                  top: '50%',
+                  left: '50%',
+                  transform: `
+                    translate(-50%, -50%)
+                    rotate(${i * 90}deg)
+                    translateY(-80px)
+                    rotate(${-circleRotation}deg)
+                  `,
                 }}
               >
-                {label}
-              </span>
-            );
-          })}
+                {dir}
+              </div>
+            ))}
+          </div>
+
+          {/* Фиксированная белая стрелка (всегда вверху) */}
+          <div className='absolute top-1/2 left-1/2 w-1 h-24 bg-white origin-bottom -translate-x-1/2 -translate-y-1/2' />
         </div>
       )}
 
-      <p className='mt-4 text-sm text-gray-600 text-center'>
+      <div className='mt-4 text-center'>
         {coords ? (
           <>
-            Азимут к&nbsp;Каабе:&nbsp;{qiblaAzimuth.toFixed(2)}° <br />
-            Ваше направление:&nbsp;{deviceHeading.toFixed(2)}° <br />
-            Повернитесь на:&nbsp;{relativeDirection.toFixed(2)}°
+            <p>Азимут к Каабе: {qiblaAzimuth.toFixed(2)}°</p>
+            <p>Текущее направление: {deviceHeading.toFixed(2)}°</p>
+            <p>Угол до Каабы: {(qiblaAzimuth - deviceHeading + 360) % 360}°</p>
           </>
         ) : (
-          <>Получаю геолокацию…</>
+          <p>Получаю геолокацию...</p>
         )}
-      </p>
+      </div>
     </div>
   );
 };
