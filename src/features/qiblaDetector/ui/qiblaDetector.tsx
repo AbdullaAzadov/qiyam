@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ICoords } from '@/src/shared/lib/types';
 import { useEffect, useRef, useState } from 'react';
 import { getQiblaDirection } from './lib/utils';
@@ -7,7 +8,18 @@ const QiblaDetector = () => {
   const [coords, setCoords] = useState<ICoords | null>(null);
   const [compassHeading, setCompassHeading] = useState<number>(0);
   const arrowRef = useRef<HTMLDivElement | null>(null);
+  const [permissionGranted, setPermissionGranted] = useState(false);
 
+  const requestPermission = async () => {
+    try {
+      const result = await (DeviceOrientationEvent as any).requestPermission();
+      if (result === 'granted') {
+        setPermissionGranted(true);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
   useEffect(() => {
     if (typeof window !== 'undefined' && 'geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -19,7 +31,6 @@ const QiblaDetector = () => {
     }
   }, []);
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
   useEffect(() => {
     const handleOrientation = (event: DeviceOrientationEvent) => {
       if (typeof event.alpha === 'number') {
@@ -70,10 +81,19 @@ const QiblaDetector = () => {
         />
         <span className='absolute bottom-1 text-xs text-gray-500'>Север ↑</span>
       </div>
-      <p className='mt-4 text-sm text-gray-600'>
-        Азимут к Каабе: {qiblaAngle.toFixed(2)}° <br />
-        Компас: {compassHeading.toFixed(2)}°
-      </p>
+      {!permissionGranted ? (
+        <button
+          onClick={requestPermission}
+          className='mt-4 px-4 py-2 bg-blue-500 text-white rounded'
+        >
+          Включить компас
+        </button>
+      ) : (
+        <p className='mt-4 text-sm text-gray-600'>
+          Азимут к Каабе: {qiblaAngle.toFixed(2)}° <br />
+          Компас: {compassHeading.toFixed(2)}°
+        </p>
+      )}
     </div>
   );
 };
