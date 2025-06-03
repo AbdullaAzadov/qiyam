@@ -38,6 +38,9 @@ importers:
       date-fns-tz:
         specifier: ^3.2.0
         version: 3.2.0(date-fns@4.1.0)
+      detect-device-orientation:
+        specifier: ^0.2.1
+        version: 0.2.1
       framer-motion:
         specifier: ^12.16.0
         version: 12.16.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -1105,6 +1108,9 @@ packages:
   define-properties@1.2.1:
     resolution: {integrity: sha512-8QmQKqEASLd5nx0U1B1okLElbUuuttJ/AnYmRXbbbGDWh6uS208EjD4Xqq/I9wK7u0v6O08XhTWnt5XtEbR6Dg==}
     engines: {node: '>= 0.4'}
+
+  detect-device-orientation@0.2.1:
+    resolution: {integrity: sha512-9RZElpBq0Jk+0oKMhEx5YhDuJcErgyzShYtZfsdNT6crupMOaGvHgWck/oO9+DhAmKa1q0t/sT5DhIHTgJj70A==}
 
   detect-libc@2.0.4:
     resolution: {integrity: sha512-3UDv+G9CsCKO1WKMGw9fwq/SWJYbI0c5Y7LU1AXYoDdbhE2AHQ6N6Nb34sG8Fj7T5APy8qXDCKuuIHd1BR0tVA==}
@@ -3166,6 +3172,8 @@ snapshots:
       define-data-property: 1.1.4
       has-property-descriptors: 1.0.2
       object-keys: 1.1.1
+
+  detect-device-orientation@0.2.1: {}
 
   detect-libc@2.0.4: {}
 
