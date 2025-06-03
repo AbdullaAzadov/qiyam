@@ -30,6 +30,9 @@ const QiblaDetector = () => {
     null
   );
   const [heading, setHeading] = useState<number>(0);
+  const [alpha, setAlpha] = useState<number>(0);
+  const [beta, setBeta] = useState<number>(0);
+  const [gamma, setGamma] = useState<number>(0);
   const [permissionGranted, setPermissionGranted] = useState(false);
 
   /* ---------- Геолокация ---------- */
@@ -59,6 +62,9 @@ const QiblaDetector = () => {
   useEffect(() => {
     const handleOrientation = (e: DeviceOrientationEvent) => {
       if (e.alpha != null) setHeading(e.alpha);
+      if (e.alpha != null) setAlpha(e.alpha);
+      if (e.beta != null) setBeta(e.beta);
+      if (e.gamma != null) setGamma(e.gamma);
     };
 
     if ('DeviceOrientationEvent' in window) {
@@ -134,6 +140,11 @@ const QiblaDetector = () => {
             Ваш курс сейчас:&nbsp;
             <span className='font-semibold'>{heading.toFixed(2)}°</span>
           </p>
+          <div>
+            <p>α: {alpha.toFixed(2)}°</p>
+            <p>β: {beta.toFixed(2)}°</p>
+            <p>γ: {gamma.toFixed(2)}°</p>
+          </div>
         </>
       )}
     </div>
