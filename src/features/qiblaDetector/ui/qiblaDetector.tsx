@@ -1,6 +1,6 @@
 'use client'; // Mark this as a Client Component since it uses browser APIs
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   DetectDeviceOrientation,
   Orientation,
@@ -38,22 +38,14 @@ export default function QiblaDetector() {
     detectDeviceOrientation.requestDeviceOrientationPermission();
   };
 
-  // Check if DeviceOrientationEvent is supported
-  // useEffect(() => {
-  //   if (typeof window !== 'undefined' && window.DeviceOrientationEvent) {
-  //     // For iOS Safari, check if permission is needed
-  //     if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-  //       // Permission request is required (iOS Safari)
-  //       setPermissionState('prompt');
-  //     } else {
-  //       // No permission needed, initialize directly
-  //       detectDeviceOrientation.init(handleOrientationChange);
-  //       setPermissionState('granted');
-  //     }
-  //   } else {
-  //     setError('Device orientation not supported in this browser.');
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.DeviceOrientationEvent) {
+      // For iOS Safari, check if permission is needed
+      // No permission needed, initialize directly
+      detectDeviceOrientation.init(handleOrientationChange);
+      setPermissionState('granted');
+    }
+  }, []);
 
   return (
     <div style={{ padding: '20px' }}>
