@@ -49,11 +49,9 @@ export default function QiblaDetector() {
   return (
     <div style={{ padding: '20px' }}>
       <h1>Device Orientation</h1>
-      {permissionState === 'prompt' && (
-        <button onClick={requestPermission}>
-          Request Device Orientation Permission
-        </button>
-      )}
+      <button onClick={requestPermission}>
+        Request Device Orientation Permission
+      </button>
       {permissionState === 'granted' && (
         <div>
           <p>Absolute: {orientation.absolute ? 'True' : 'False'}</p>
