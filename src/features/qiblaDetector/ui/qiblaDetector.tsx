@@ -16,7 +16,6 @@ export default function QiblaDetector() {
     webkitCompassAccuracy: undefined,
   });
   const [permissionState, setPermissionState] = useState('prompt'); // 'granted', 'denied', or 'prompt'
-  const [error, setError] = useState(null);
 
   // Initialize the device orientation detector
   const detectDeviceOrientation = new DetectDeviceOrientation();
@@ -50,7 +49,6 @@ export default function QiblaDetector() {
   return (
     <div style={{ padding: '20px' }}>
       <h1>Device Orientation</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
       {permissionState === 'prompt' && (
         <button onClick={requestPermission}>
           Request Device Orientation Permission
