@@ -1,10 +1,11 @@
 'use client'; // Mark this as a Client Component since it uses browser APIs
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   DetectDeviceOrientation,
   Orientation,
 } from 'detect-device-orientation';
+import { Button } from '@/src/shared/cn/components/ui/button';
 
 export default function QiblaDetector() {
   const [orientation, setOrientation] = useState<Orientation>({
@@ -18,7 +19,9 @@ export default function QiblaDetector() {
   const [permissionState, setPermissionState] = useState('prompt'); // 'granted', 'denied', or 'prompt'
 
   // Initialize the device orientation detector
-  const detectDeviceOrientation = new DetectDeviceOrientation();
+  const detectDeviceOrientationRef = useRef<DetectDeviceOrientation | null>(
+    null
+  );
 
   // Handle orientation updates
   const handleOrientationChange = (orientationData: Orientation) => {
@@ -34,14 +37,15 @@ export default function QiblaDetector() {
 
   // Request permission for iOS Safari
   const requestPermission = () => {
-    detectDeviceOrientation.requestDeviceOrientationPermission();
+    if (!detectDeviceOrientationRef.current) return;
+    detectDeviceOrientationRef.current.requestDeviceOrientationPermission();
   };
 
   useEffect(() => {
+    detectDeviceOrientationRef.current = new DetectDeviceOrientation();
+
     if (typeof window !== 'undefined' && window.DeviceOrientationEvent) {
-      // For iOS Safari, check if permission is needed
-      // No permission needed, initialize directly
-      detectDeviceOrientation.init(handleOrientationChange);
+      detectDeviceOrientationRef.current.init(handleOrientationChange);
       setPermissionState('granted');
     }
   }, []);
@@ -49,9 +53,10 @@ export default function QiblaDetector() {
   return (
     <div style={{ padding: '20px' }}>
       <h1>Device Orientation</h1>
-      <button onClick={requestPermission}>
+      <p>{permissionState}</p>
+      <Button onClick={requestPermission}>
         Request Device Orientation Permission
-      </button>
+      </Button>
       {permissionState === 'granted' && (
         <div>
           <p>Absolute: {orientation.absolute ? 'True' : 'False'}</p>
