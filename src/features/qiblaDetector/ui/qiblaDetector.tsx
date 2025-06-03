@@ -1,78 +1,71 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import { ICoords } from '@/src/shared/lib/types';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getQiblaDirection } from './lib/utils';
 
 const QiblaDetector = () => {
   const [coords, setCoords] = useState<ICoords | null>(null);
   const [compassHeading, setCompassHeading] = useState<number>(0);
   const [permissionGranted, setPermissionGranted] = useState<boolean>(false);
-  const arrowRef = useRef<HTMLDivElement | null>(null);
 
-  // Получение геолокации
+  /* ---------- Геолокация ---------- */
   useEffect(() => {
     if (typeof window !== 'undefined' && 'geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        (pos) =>
           setCoords({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.error('Ошибка геолокации:', error);
-        }
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+          }),
+        (err) => console.error('Geolocation error:', err)
       );
     }
   }, []);
 
-  // Обработчик ориентации устройства
+  /* ---------- Датчик ориентации ---------- */
   useEffect(() => {
-    const handleOrientation = (event: DeviceOrientationEvent) => {
-      if (typeof event.alpha === 'number') {
-        setCompassHeading(event.alpha);
-      }
+    const handleOrientation = (e: DeviceOrientationEvent) => {
+      if (typeof e.alpha === 'number') setCompassHeading(e.alpha);
     };
 
     if (typeof window !== 'undefined' && 'DeviceOrientationEvent' in window) {
-      const devOrientation = DeviceOrientationEvent as any;
+      const D = DeviceOrientationEvent as any;
 
-      if (typeof devOrientation.requestPermission === 'function') {
-        // iOS — ждём разрешения
+      // iOS 13+: нужно отдельное разрешение
+      if (typeof D.requestPermission === 'function') {
         if (permissionGranted) {
           window.addEventListener('deviceorientation', handleOrientation, true);
         }
       } else {
-        // Android и другие — сразу подключаем
+        // Android / десктоп
         window.addEventListener('deviceorientation', handleOrientation, true);
       }
 
-      return () => {
+      return () =>
         window.removeEventListener('deviceorientation', handleOrientation);
-      };
     }
   }, [permissionGranted]);
 
-  // Запрос разрешения на iOS
-  const handleRequestPermission = async () => {
+  /* ---------- Разрешение для iOS ---------- */
+  const requestPermission = async () => {
     try {
-      const devOrientation = DeviceOrientationEvent as any;
-      if (typeof devOrientation.requestPermission === 'function') {
-        const result = await devOrientation.requestPermission();
-        if (result === 'granted') {
-          setPermissionGranted(true);
-        }
+      const D = DeviceOrientationEvent as any;
+      if (typeof D.requestPermission === 'function') {
+        const res = await D.requestPermission();
+        if (res === 'granted') setPermissionGranted(true);
       }
-    } catch (err) {
-      console.error('Ошибка разрешения на ориентацию:', err);
+    } catch (e) {
+      console.error('Orientation permission error:', e);
     }
   };
 
-  const qiblaAngle = coords
+  /* ---------- Геометрия ---------- */
+  const qiblaAzimuth = coords
     ? getQiblaDirection(coords.latitude, coords.longitude)
     : 0;
-  const rotation = (qiblaAngle - compassHeading + 360) % 360;
+  // угол, на который надо повернуть компас-диск
+  const diskRotation = (qiblaAzimuth - compassHeading + 360) % 360;
 
   return (
     <div className='flex flex-col items-center justify-center min-h-[50vh] px-4'>
@@ -84,35 +77,42 @@ const QiblaDetector = () => {
       (DeviceOrientationEvent as any).requestPermission &&
       !permissionGranted ? (
         <button
-          onClick={handleRequestPermission}
-          className='px-4 py-2 bg-blue-600 text-white rounded shadow-md hover:bg-blue-700 transition'
+          onClick={requestPermission}
+          className='px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700 transition'
         >
           Включить компас
         </button>
       ) : (
-        <div className='relative w-40 h-40 border-4 border-gray-300 dark:border-gray-600 rounded-full flex items-center justify-center mt-2'>
-          <div
-            ref={arrowRef}
-            className='absolute w-1 h-20 bg-red-600 origin-bottom'
-            style={{
-              transform: `rotate(${rotation}deg)`,
-              transition: 'transform 0.2s ease-out',
-            }}
-          />
-          <span className='absolute bottom-1 text-xs text-gray-500'>
-            Север ↑
-          </span>
+        /* --- Компас --- */
+        <div
+          className='relative w-44 h-44 rounded-full border-4 border-gray-300 dark:border-gray-600 flex items-center justify-center mt-2'
+          style={{
+            transform: `rotate(${diskRotation}deg)`,
+            transition: 'transform 0.2s ease-out',
+          }}
+        >
+          {/* Иконка Каабы на ободе (изначально «север») */}
+          <div className='absolute -top-4 left-1/2 -translate-x-1/2 text-3xl select-none'>
+            🕋
+          </div>
+
+          {/* Центральная стрелка (фиксирована) */}
+          <div className='absolute w-1 h-20 bg-red-600 origin-bottom'></div>
+
+          {/* Метки сторон света, если нужны */}
+          {/* <span className="absolute top-0 left-1/2 -translate-x-1/2 text-xs">N</span> */}
         </div>
       )}
 
+      {/* Текстовая справка */}
       <p className='mt-4 text-sm text-gray-600 text-center'>
         {coords ? (
           <>
-            Азимут к Каабе: {qiblaAngle.toFixed(2)}° <br />
-            Компас: {compassHeading.toFixed(2)}°
+            Азимут к&nbsp;Каабе:&nbsp;{qiblaAzimuth.toFixed(2)}° <br />
+            Компас:&nbsp;{compassHeading.toFixed(2)}°
           </>
         ) : (
-          <>Получение геолокации...</>
+          <>Получаю геолокацию…</>
         )}
       </p>
     </div>
