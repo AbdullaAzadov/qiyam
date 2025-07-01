@@ -1,4 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { getBaseUrl } from "../lib/consts";
 
 interface IGeoResponse {
   latitude: number;
@@ -24,9 +25,9 @@ export interface IGeoSearchResponse {
 }
 
 export const addressApi = createApi({
-  reducerPath: 'addressApi',
+  reducerPath: "addressApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
+    baseUrl: getBaseUrl(),
   }),
   endpoints: (build) => ({
     reverseGeocode: build.query<
@@ -41,9 +42,9 @@ export const addressApi = createApi({
         const isSairam =
           lat >= 42.3 && lat <= 42.31 && lon >= 69.75 && lon <= 69.77;
         if (isSairam) {
-          return 'Сайрам';
+          return "Сайрам";
         }
-        return city || locality || 'Неизвестно';
+        return city || locality || "Неизвестно";
       },
     }),
     searchCityByName: build.query<
@@ -53,13 +54,13 @@ export const addressApi = createApi({
       query: ({ q, limit }) =>
         `/api/address/search-by-name?q=${q.trim()}&limit=${limit ?? 8}`,
       transformResponse: (response: IGeoSearchResponse[]) => {
-        const priority = ['kz', 'uz', 'kg', 'ru'];
+        const priority = ["kz", "uz", "kg", "ru"];
 
         const uniqueMap = new Map<string, IGeoSearchResponse>();
         response.forEach((item) => {
           const key = `${item.name}-${item.address.city}-${item.address.country}`;
           const isValid =
-            item.osm_type === 'relation' &&
+            item.osm_type === "relation" &&
             item.display_name !== item.address.country;
 
           if (!uniqueMap.has(key) && isValid) {
@@ -69,8 +70,8 @@ export const addressApi = createApi({
         const uniqueResponse = Array.from(uniqueMap.values());
 
         return uniqueResponse.sort((a, b) => {
-          const aCode = a.address.country_code?.toLowerCase() || '';
-          const bCode = b.address.country_code?.toLowerCase() || '';
+          const aCode = a.address.country_code?.toLowerCase() || "";
+          const bCode = b.address.country_code?.toLowerCase() || "";
 
           const aIndex = priority.indexOf(aCode);
           const bIndex = priority.indexOf(bCode);
@@ -89,4 +90,8 @@ export const addressApi = createApi({
   }),
 });
 
-export const { useReverseGeocodeQuery, useSearchCityByNameQuery } = addressApi;
+export const {
+  useReverseGeocodeQuery,
+  useLazyReverseGeocodeQuery,
+  useSearchCityByNameQuery,
+} = addressApi;

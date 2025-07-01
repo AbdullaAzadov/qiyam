@@ -1,11 +1,9 @@
-import NamazTimeCard from '@/src/features/namazTime/ui/namazTimeCard';
-import QiblaDetector from '@/src/features/qiblaDetector/ui/qiblaDetector';
+import NamazTimeCard from "@/src/features/namazTime/ui/namazTimeCard";
 
 const MainPage = () => {
   return (
-    <div className='p-4'>
+    <div className="p-4">
       <NamazTimeCard />
-      <QiblaDetector />
     </div>
   );
 };

@@ -1,6 +1,6 @@
-import { DEFAULT_COORDS, DEFAULT_COORDS_LABEL } from '../../lib/consts';
-import { ICoords } from '../../lib/types';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { INVALID_COORDS } from "../lib/consts";
+import { ICoords } from "../lib/types";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface UserLocationState {
   coords: ICoords;
@@ -8,12 +8,12 @@ export interface UserLocationState {
 }
 
 const initialState: UserLocationState = {
-  coords: DEFAULT_COORDS,
-  coordsLabel: DEFAULT_COORDS_LABEL,
+  coords: INVALID_COORDS,
+  coordsLabel: "",
 };
 
 const userLocationSlice = createSlice({
-  name: 'userLocation',
+  name: "userLocation",
   initialState,
   reducers: {
     setUserCoords(state, action: PayloadAction<ICoords>) {

@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { namazTimeApi } from '../features/namazTime/api/namazTimeApi';
-import userLocationReducer from '@/src/shared/model/slices/userLocationSlice';
+import userLocationReducer from '@/src/shared/slices/userLocationSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { addressApi } from '../shared/api/addressApi';
 

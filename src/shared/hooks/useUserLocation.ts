@@ -1,71 +1,80 @@
-'use client';
-import { useDispatch } from 'react-redux';
-import { useEffect } from 'react';
-import {
-  setUserCoords,
-  setUserCoordsLabel,
-  resetUserLocation,
-} from '@/src/shared/model/slices/userLocationSlice';
-import { useAppSelector } from '@/src/app/store';
-import { LS_KEY_COORDS, LS_KEY_COORDS_LABEL } from '../lib/consts';
-import { ICoords } from '../lib/types';
-import { isNumber } from 'lodash';
+"use client";
+import { useEffect, useState } from "react";
+import { getCurrentCoords } from "@/src/adapters/address/addressService";
+import { useAppDispatch, useAppSelector } from "@/src/app/store";
+import { setUserCoords, setUserCoordsLabel } from "../slices/userLocationSlice";
+import { useLazyReverseGeocodeQuery } from "../api/addressApi";
+import { ICoords } from "../lib/types";
+import storageAdapter from "@/src/adapters/storage/storageService";
+import { LS_KEY_COORDS, LS_KEY_COORDS_LABEL } from "../lib/consts";
 
 export function useUserLocation() {
-  const dispatch = useDispatch();
-  const userCoords = useAppSelector((state) => state.userLocation.coords);
-  const userCoordsLabel = useAppSelector(
-    (state) => state.userLocation.coordsLabel
-  );
+  const [fetchReverseGeocode, { isLoading: isLoadingReverseGeocode }] =
+    useLazyReverseGeocodeQuery();
+  const { coords, coordsLabel } = useAppSelector((state) => state.userLocation);
+  const dispatch = useAppDispatch();
+
+  const [isLoading, setIsLoading] = useState(isLoadingReverseGeocode);
+  const [error, setError] = useState<string | null>(null);
+
+  function setCoords(coords: ICoords) {
+    dispatch(setUserCoords(coords));
+    storageAdapter.setItem(LS_KEY_COORDS, coords);
+  }
+
+  function setCoordsLabel(coordsLabel: string) {
+    dispatch(setUserCoordsLabel(coordsLabel));
+    storageAdapter.setItem(LS_KEY_COORDS_LABEL, coordsLabel);
+  }
 
   useEffect(() => {
-    const coordsRaw = localStorage.getItem(LS_KEY_COORDS);
-    const label = localStorage.getItem(LS_KEY_COORDS_LABEL);
+    setIsLoading(isLoadingReverseGeocode);
+  }, [isLoadingReverseGeocode]);
 
-    if (coordsRaw) {
+  const fetchCoords = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    const res = await getCurrentCoords();
+
+    if (res) {
+      setCoords(res);
       try {
-        const parsed = JSON.parse(coordsRaw) as ICoords;
-        if (isNumber(parsed.latitude) && isNumber(parsed.longitude)) {
-          dispatch(setUserCoords(parsed));
-        }
-      } catch (err) {
-        console.warn('Failed to parse userCoords from LS' + err);
+        const label = await fetchReverseGeocode(res).unwrap();
+        if (label) setCoordsLabel(label);
+      } catch (e) {
+        console.warn("Ошибка получения адреса:", e);
+      }
+    } else {
+      const savedCoords = await storageAdapter.getItem<ICoords>(LS_KEY_COORDS);
+      const savedLabel = await storageAdapter.getItem<string>(
+        LS_KEY_COORDS_LABEL
+      );
+
+      console.log(savedLabel);
+
+      if (savedCoords && savedLabel) {
+        setCoords(savedCoords);
+        setCoordsLabel(savedLabel);
+      } else {
+        setError("Не удалось получить координаты");
       }
     }
 
-    if (label) {
-      dispatch(setUserCoordsLabel(label));
-    }
-  }, [dispatch]);
+    setIsLoading(false);
+  };
 
   useEffect(() => {
-    if (userCoords) {
-      localStorage.setItem(LS_KEY_COORDS, JSON.stringify(userCoords));
-    }
-    if (userCoordsLabel) {
-      localStorage.setItem(LS_KEY_COORDS_LABEL, userCoordsLabel);
-    }
-  }, [userCoords, userCoordsLabel]);
-
-  const setCoords = (coords: ICoords) => {
-    dispatch(setUserCoords(coords));
-  };
-
-  const setLabel = (label: string) => {
-    dispatch(setUserCoordsLabel(label));
-  };
-
-  const reset = () => {
-    localStorage.removeItem(LS_KEY_COORDS);
-    localStorage.removeItem(LS_KEY_COORDS_LABEL);
-    dispatch(resetUserLocation());
-  };
+    fetchCoords();
+  }, []);
 
   return {
-    userCoords,
-    userCoordsLabel,
+    coords,
+    coordsLabel,
+    isLoading,
+    error,
+    refetch: fetchCoords,
     setCoords,
-    setLabel,
-    reset,
+    setCoordsLabel,
   };
 }
