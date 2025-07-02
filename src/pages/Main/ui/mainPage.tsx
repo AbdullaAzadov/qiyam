@@ -1,4 +1,3 @@
-"use client";
 import NamazTimeCard from "@/src/modules/scheduleModule/namazTime/ui/namazTimeCard/namazTimeCard";
 
 const MainPage = () => {

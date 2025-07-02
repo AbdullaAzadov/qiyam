@@ -13,9 +13,8 @@ import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import NamazCalendarDrawer from "../namazCalendar/namazCalendarDrawer";
 
-const date = new Date();
-
 export default function NamazTimeCard() {
+  const date = new Date();
   const h = useNamazTimesCard();
 
   return (

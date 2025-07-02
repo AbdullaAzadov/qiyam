@@ -1,3 +1,4 @@
+"use client";
 import { ICoords } from "@/src/shared/lib/types";
 import { isWebView } from "@/src/shared/lib/utils";
 import { addressAdapterBridge } from "./addressAdapter.bridge";

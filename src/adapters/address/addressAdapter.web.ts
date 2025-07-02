@@ -1,3 +1,4 @@
+"use client";
 import { ICoords } from "@/src/shared/lib/types";
 import { IAddressService } from "./addressService";
 

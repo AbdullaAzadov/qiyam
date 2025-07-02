@@ -1,3 +1,4 @@
+"use client";
 import { isWebView } from "@/src/shared/lib/utils";
 import { storageAdapterWeb } from "./storageAdapter.web";
 import { storageAdapterBridge } from "./storageAdapter.bridge";

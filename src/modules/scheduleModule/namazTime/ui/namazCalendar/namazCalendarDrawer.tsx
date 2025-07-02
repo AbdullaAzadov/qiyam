@@ -14,9 +14,8 @@ type Props = {
   data?: INamazDataWithDate[];
 };
 
-const date = new Date();
-
 const NamazCalendarDrawer = ({ trigger, isLoading, data }: Props) => {
+  const date = new Date();
   return (
     <CustomDrawer
       trigger={trigger}

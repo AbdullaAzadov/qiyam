@@ -1,3 +1,4 @@
+"use client";
 import { configureStore } from "@reduxjs/toolkit";
 import { namazTimeApi } from "../modules/scheduleModule/namazTime/api/namazTimeApi";
 import userLocationReducer from "@/src/shared/slices/userLocationSlice";

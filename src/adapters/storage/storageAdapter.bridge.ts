@@ -1,3 +1,4 @@
+"use client";
 import {
   registerWebviewListener,
   sendToNative,

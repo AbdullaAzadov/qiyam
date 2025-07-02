@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Geologica, Varela_Round } from "next/font/google";
 import AppProvider from "@/src/app/providers/provider";
-import { cn } from "@/src/shared/cn/lib/utils";
-import { isWebView } from "@/src/shared/lib/utils";
 
 const geologica = Geologica({
   subsets: ["latin", "cyrillic"],
@@ -30,12 +28,7 @@ export default function RootLayout({
   return (
     <html lang="ru" suppressHydrationWarning translate="no">
       <body
-        className={cn(
-          geologica.className,
-          valera_round.variable,
-          "antialiased",
-          isWebView && "h-screen overflow-hidden"
-        )}
+        className={`${geologica.className} ${valera_round.variable} antialiased`}
       >
         <AppProvider>{children}</AppProvider>
       </body>

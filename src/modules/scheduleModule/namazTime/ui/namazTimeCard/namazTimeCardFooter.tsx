@@ -3,7 +3,6 @@ import React from "react";
 import { INamazTimings } from "../../api/types";
 import { getNearestNamazTime } from "../../lib/utils";
 import { useCurrentTime } from "@/src/shared/hooks/useCurrentTime";
-import { CalendarDaysIcon } from "lucide-react";
 
 type Props = {
   isLoading: boolean;
