@@ -1,9 +1,9 @@
-import { cn } from '@/src/shared/cn/lib/utils';
-import { TIMEZONE } from '@/src/shared/lib/consts';
-import { parseISO } from 'date-fns';
-import { format, toZonedTime } from 'date-fns-tz';
-import { Volume1Icon } from 'lucide-react';
-import React from 'react';
+import { cn } from "@/src/shared/cn/lib/utils";
+import { TIMEZONE } from "@/src/shared/lib/consts";
+import { parseISO } from "date-fns";
+import { format, toZonedTime } from "date-fns-tz";
+import { Volume1Icon } from "lucide-react";
+import React from "react";
 
 type Props = {
   label: string;
@@ -25,13 +25,13 @@ const NamazTimeCardItem = ({
   isLoading,
 }: Props) => {
   const iconCn =
-    'absolute top-1/2 left-3/4 -translate-x-1/2 -translate-y-1/2 size-4.5 stroke-1 fill-muted text-muted';
-  const itemCn = 'flex items-center justify-between relative font-semibold';
-  const transitionCn = 'transition-all duration-300';
+    "absolute top-1/2 left-3/4 -translate-x-1/2 -translate-y-1/2 size-4.5 stroke-1 fill-muted text-muted";
+  const itemCn = "flex items-center justify-between relative font-semibold";
+  const transitionCn = "transition-all duration-300";
   const isLoadingNoPaddingCn =
-    'bg-muted-foreground text-transparent rounded-lg opacity-25';
+    "bg-muted-foreground text-transparent rounded-lg opacity-25";
   const isLoadingCn =
-    'bg-muted-foreground text-transparent px-4 rounded-lg opacity-25';
+    "bg-muted-foreground text-transparent px-4 rounded-lg opacity-25";
 
   const formattedTime = time && formatTime(time);
 
@@ -40,7 +40,7 @@ const NamazTimeCardItem = ({
       className={cn(
         itemCn,
         transitionCn,
-        isLoading && 'animate-pulse',
+        isLoading && "animate-pulse",
         className
       )}
     >
@@ -54,7 +54,7 @@ const NamazTimeCardItem = ({
             <span
               className={cn(
                 transitionCn,
-                'font-light text-sm text-muted-foreground',
+                "font-light text-sm text-muted-foreground",
                 isLoading && isLoadingNoPaddingCn
               )}
             >
@@ -64,20 +64,20 @@ const NamazTimeCardItem = ({
         )}
       </p>
       <Volume1Icon
-        className={cn(iconCn, iconClassName, isLoading && 'opacity-0')}
+        className={cn(iconCn, iconClassName, isLoading && "opacity-0")}
       />
-      <p className={cn('font-digits')}>
+      <p className={cn("font-digits")}>
         <span
-          className={cn(isLoading && isLoadingNoPaddingCn, isLoading && 'px-2')}
+          className={cn(isLoading && isLoadingNoPaddingCn, isLoading && "px-2")}
         >
-          {formattedTime ? formattedTime : '--:--'}
+          {formattedTime ? formattedTime : "--:--"}
         </span>
         {subTime && (
           <>
             <br />
             <span
               className={cn(
-                'font-light text-sm text-muted-foreground',
+                "font-light text-sm text-muted-foreground",
                 isLoading && isLoadingNoPaddingCn
               )}
             >
@@ -92,7 +92,7 @@ const NamazTimeCardItem = ({
 
 export default NamazTimeCardItem;
 
-const formatTime = (isoString: string): string => {
+export const formatTime = (isoString: string): string => {
   const date = toZonedTime(parseISO(isoString), TIMEZONE);
-  return format(date, 'HH:mm', { timeZone: TIMEZONE });
+  return format(date, "HH:mm", { timeZone: TIMEZONE });
 };

@@ -28,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ru" suppressHydrationWarning translate="no">
       <body
         className={cn(
           geologica.className,

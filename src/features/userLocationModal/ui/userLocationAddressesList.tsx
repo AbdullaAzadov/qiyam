@@ -1,9 +1,9 @@
-import { IGeoSearchResponse } from '@/src/shared/api/addressApi';
-import { cn } from '@/src/shared/cn/lib/utils';
-import { MapPinXIcon } from 'lucide-react';
-import UserGeolocationItem, {
-  UserGeolocationItemSkeleton,
-} from './userGeolocationItem';
+import { IGeoSearchResponse } from "@/src/shared/api/addressApi";
+import { cn } from "@/src/shared/cn/lib/utils";
+import { MapPinXIcon } from "lucide-react";
+import UserLocationAddressItem, {
+  UserLocationAddressItemSkeleton,
+} from "./userLocationAddressItem";
 
 type Props = {
   renderData: IGeoSearchResponse[];
@@ -15,7 +15,7 @@ type Props = {
 
 const ITEMS_LIMIT = 8;
 
-const UserGeolocationList = ({
+const UserLocationAddressesList = ({
   onSelectLocation,
   isFetching,
   renderingRecentlyLocations,
@@ -23,7 +23,7 @@ const UserGeolocationList = ({
   query,
 }: Props) => {
   return (
-    <div className={cn('overflow-y-auto space-y-4 h-full')}>
+    <div className={cn("overflow-y-auto space-y-4 h-full")}>
       {renderingRecentlyLocations && !isFetching && (
         <p>Популярные местоположения</p>
       )}
@@ -33,8 +33,8 @@ const UserGeolocationList = ({
         <LocationsList data={renderData} onSelectLocation={onSelectLocation} />
       )}
       {renderData.length === 0 && !isFetching && (
-        <div className='flex items-center gap-3 justify-center h-full font-light text-muted-foreground'>
-          <MapPinXIcon className='size-8 stroke-2' />
+        <div className="flex items-center gap-3 justify-center h-full font-light text-muted-foreground">
+          <MapPinXIcon className="size-8 stroke-2" />
           <span>
             Ничего не найдено <br /> по запросу &quot;{query}&quot;
           </span>
@@ -53,7 +53,7 @@ const LocationsList = ({ data, onSelectLocation }: listProps) => {
   return data.map((location, index) => {
     if (index >= ITEMS_LIMIT) return null;
     return (
-      <UserGeolocationItem
+      <UserLocationAddressItem
         key={index}
         location={location}
         onSelectLocation={onSelectLocation}
@@ -66,10 +66,10 @@ const LocationListLoading = ({ count }: { count: number }) => {
   return (
     <>
       {[...Array(count)].map((_, index) => {
-        return <UserGeolocationItemSkeleton key={index} />;
+        return <UserLocationAddressItemSkeleton key={index} />;
       })}
     </>
   );
 };
 
-export default UserGeolocationList;
+export default UserLocationAddressesList;

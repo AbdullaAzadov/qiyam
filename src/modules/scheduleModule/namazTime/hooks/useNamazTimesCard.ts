@@ -1,7 +1,13 @@
 "use client";
 import { useUserLocation } from "@/src/shared/hooks/useUserLocation";
-import { useGetNamazTimingsQuery } from "../api/namazTimeApi";
+import {
+  useGetCurrentMonthNamazTimingsQuery,
+  useGetNamazTimingsQuery,
+} from "../api/namazTimeApi";
 import { IGeoSearchResponse } from "@/src/shared/api/addressApi";
+
+const month = new Date().getMonth() + 1; // Get current month (1-12)
+const year = new Date().getFullYear(); // Get current year
 
 export const useNamazTimesCard = () => {
   const {
@@ -13,13 +19,17 @@ export const useNamazTimesCard = () => {
     setCoordsLabel,
   } = useUserLocation();
 
-  console.log(coords);
-
   const {
     data: timingsData,
     isFetching: isTimingsFetching,
     isSuccess,
   } = useGetNamazTimingsQuery({ coords: coords! }, { skip: !coords });
+
+  const { data: monthTimingsData, isFetching: isMonthTimingsFetching } =
+    useGetCurrentMonthNamazTimingsQuery(
+      { coords: coords!, month, year },
+      { skip: !coords }
+    );
 
   const timings = isSuccess
     ? timingsData.data.timings
@@ -55,5 +65,7 @@ export const useNamazTimesCard = () => {
     coordsLabel,
     isTimingsFetching,
     handleLocationSelect,
+    monthTimingsData,
+    isMonthTimingsFetching,
   };
 };

@@ -51,8 +51,6 @@ export function useUserLocation() {
         LS_KEY_COORDS_LABEL
       );
 
-      console.log(savedLabel);
-
       if (savedCoords && savedLabel) {
         setCoords(savedCoords);
         setCoordsLabel(savedLabel);
